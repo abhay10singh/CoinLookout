@@ -1,5 +1,4 @@
-# Firebase Studio
+CoinLookout 
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at src/app/page.tsx.
+want's to know the Price of your crypto coin ? ,
+We got you !

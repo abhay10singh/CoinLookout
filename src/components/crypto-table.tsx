@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -18,8 +19,7 @@ import {
   Search,
   Star,
 } from 'lucide-react';
-import type { MappedCryptoCurrency } from '@/services/coin-gecko'; // Use mapped type
-import { getCryptoCurrencies } from '@/services/coin-gecko';
+import type { MappedCryptoCurrency } from '@/services/coin-gecko'; // Keep type import
 import { Skeleton } from '@/components/ui/skeleton';
 import { FAVORITES_LOCAL_STORAGE_KEY, REFRESH_INTERVAL_MS } from '@/lib/constants';
 import useLocalStorage from '@/hooks/use-local-storage';
@@ -44,25 +44,54 @@ export function CryptoTable() {
 
   const fetchData = React.useCallback(async () => {
     // Keep showing loading state for subsequent fetches unless it's the first load
-    if (cryptos.length === 0) setIsLoading(true);
+    // But ensure loading indicator is active if cryptos array is empty
+    if (cryptos.length === 0 && !isLoading) setIsLoading(true);
+
     try {
       setError(null); // Clear previous errors
-      const data = await getCryptoCurrencies();
-       if (data && data.length > 0) {
+
+      // Fetch data from the internal API route
+      const response = await fetch('/api/cryptos');
+
+      if (!response.ok) {
+        // Try to get error message from response body
+        let errorMsg = `Error: ${response.status} ${response.statusText}`;
+        try {
+            const errorData = await response.json();
+            errorMsg = errorData.message || errorMsg;
+        } catch (jsonError) {
+            // Ignore if response is not JSON
+        }
+        throw new Error(errorMsg);
+      }
+
+      const data: MappedCryptoCurrency[] = await response.json();
+
+      if (data && data.length > 0) {
           setCryptos(data);
-       } else if (cryptos.length === 0) { // Only show error if it's the initial load failure
-           setError("No cryptocurrency data available at the moment.");
-       }
-      setIsLoading(false);
+      } else {
+          // Data is empty or null, might be an issue upstream handled by API route
+          // Only show error if it's the initial load failure and no data exists yet
+          if (cryptos.length === 0) {
+              setError("No cryptocurrency data available at the moment.");
+          }
+          // Keep existing data if this was a refresh that returned empty
+          setCryptos(prevCryptos => data && data.length > 0 ? data : prevCryptos);
+      }
+
     } catch (err) {
       console.error("Error fetching crypto data:", err);
       // Show error message only if it's the initial load or if the fetch explicitly fails
+      // and we don't have any existing data to show.
       if (cryptos.length === 0) {
-           setError("Failed to load cryptocurrency data. Please try refreshing.");
+          setError(err instanceof Error ? err.message : "Failed to load cryptocurrency data. Please try refreshing.");
       }
-      setIsLoading(false); // Ensure loading state is turned off even on error
+      // Optionally: Display a non-blocking error using a toast notification for refresh failures
+    } finally {
+        // Always ensure loading state is turned off after fetch attempt
+        setIsLoading(false);
     }
-  }, [cryptos.length]); // Depend on cryptos.length to manage initial loading state
+  }, [cryptos.length, isLoading]); // Added isLoading to dependencies
 
   // Initial data fetch and interval refresh
   React.useEffect(() => {
@@ -71,12 +100,12 @@ export function CryptoTable() {
     return () => clearInterval(intervalId); // Cleanup interval on unmount
   }, [fetchData]); // fetchData is memoized, so this runs once on mount and sets up interval
 
-  // Sorting logic
+  // Sorting logic - applied to the main 'cryptos' state
   const sortedCryptos = React.useMemo(() => {
     let sortableItems = [...cryptos];
     if (sortConfig.key !== null) {
       sortableItems.sort((a, b) => {
-        // Handle potential null/undefined values if necessary, though Mapped type tries to avoid this
+        // Ensure values exist, default numeric to 0 and string to ''
         const aValue = a[sortConfig.key!] ?? (typeof a[sortConfig.key!] === 'number' ? 0 : '');
         const bValue = b[sortConfig.key!] ?? (typeof b[sortConfig.key!] === 'number' ? 0 : '');
 
@@ -94,11 +123,18 @@ export function CryptoTable() {
         return 0;
       });
     }
-    return sortableItems;
-  }, [cryptos, sortConfig]);
+    // Favorite items should float to the top, regardless of sorting, but maintain internal sort order
+    return sortableItems.sort((a, b) => {
+        const aIsFavorite = favorites.includes(a.id);
+        const bIsFavorite = favorites.includes(b.id);
+        if (aIsFavorite && !bIsFavorite) return -1;
+        if (!aIsFavorite && bIsFavorite) return 1;
+        return 0; // Keep original sort order among favorites/non-favorites
+    });
+  }, [cryptos, sortConfig, favorites]);
 
 
-  // Filtering logic based on search term
+  // Filtering logic based on search term - applied to the sorted list
   React.useEffect(() => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const filtered = sortedCryptos.filter(
@@ -119,12 +155,17 @@ export function CryptoTable() {
         ? prevFavorites.filter((favId) => favId !== id)
         : [...prevFavorites, id]
     );
+    // Note: Sorting logic will automatically re-apply due to 'favorites' dependency in useMemo
   };
 
   const requestSort = (key: keyof MappedCryptoCurrency) => {
     let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    // If same key, toggle direction, otherwise default to descending for market cap/volume, ascending for others
+    if (sortConfig.key === key) {
+        direction = sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
+    } else {
+        // Default sort directions for specific columns
+        direction = ['marketCap', 'volume24h'].includes(key) ? 'descending' : 'ascending';
     }
     setSortConfig({ key, direction });
    };
@@ -174,12 +215,16 @@ export function CryptoTable() {
         {/* Potential Filters/Sorting Dropdowns here */}
       </div>
       <div className="rounded-lg border overflow-hidden shadow-sm bg-card neumorphism-light dark:neumorphism-dark">
-       {error && <div className="p-4 text-destructive bg-destructive/10 rounded-md m-4 text-center">{error}</div>}
+       {/* Display error prominently only if loading failed AND there's no data */}
+       {error && cryptos.length === 0 && !isLoading && (
+          <div className="p-4 text-destructive bg-destructive/10 rounded-md m-4 text-center">{error}</div>
+        )}
+
         <Table>
           <TableHeader>
-            <TableRow className="border-b-0">
-              <TableHead className="w-[50px] text-center px-2"></TableHead> {/* Favorite Star */}
-              <TableHead className="sticky left-0 bg-card z-10 w-[180px] cursor-pointer pl-4 pr-2 py-3 group" onClick={() => requestSort('name')}>
+            <TableRow className="border-b-0 bg-muted/30"> {/* Slightly different header background */}
+              <TableHead className="w-[50px] text-center px-2 sticky left-0 z-20 bg-muted/30"></TableHead> {/* Favorite Star - Sticky */}
+              <TableHead className="sticky left-[50px] bg-muted/30 z-20 w-[180px] cursor-pointer pl-4 pr-2 py-3 group" onClick={() => requestSort('name')}>
                 Name
                 <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />) : <ArrowDown className="inline h-4 w-4 text-muted-foreground/50" />}
@@ -219,12 +264,15 @@ export function CryptoTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading && filteredCryptos.length === 0 ? ( // Show skeleton only on initial load
+            {/* Show skeleton only on initial load OR if loading is true and there's no data yet */}
+            {isLoading && cryptos.length === 0 ? (
               Array.from({ length: 15 }).map((_, index) => (
                 <TableRow key={`skeleton-${index}`} className="h-[60px]">
-                  <TableCell className="px-2"><Skeleton className="h-5 w-5 rounded-full mx-auto" /></TableCell>
-                  <TableCell className="sticky left-0 bg-card z-10 pl-4 pr-2">
-                     <div className="flex items-center gap-2">
+                  <TableCell className="px-2 sticky left-0 bg-card z-10"> {/* Sticky Skeleton Cell */}
+                        <Skeleton className="h-5 w-5 rounded-full mx-auto" />
+                   </TableCell>
+                  <TableCell className="sticky left-[50px] bg-card z-10 pl-4 pr-2"> {/* Sticky Skeleton Cell */}
+                     <div className="flex items-center gap-3"> {/* Adjusted gap */}
                         <Skeleton className="h-6 w-6 rounded-full" />
                          <div className="flex-1 space-y-1.5">
                              <Skeleton className="h-4 w-3/4" />
@@ -244,12 +292,13 @@ export function CryptoTable() {
               filteredCryptos.map((crypto) => {
                  const isFavorite = favorites.includes(crypto.id);
                  const priceChange = crypto.priceChange24h;
-                 const isPositiveChange = priceChange >= 0;
+                 // Ensure priceChange is treated as a number, default to 0 if null/undefined
+                 const isPositiveChange = (priceChange ?? 0) >= 0;
                  const changeColor = isPositiveChange ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
 
                  return (
                 <TableRow key={crypto.id} data-state={isFavorite ? 'selected' : undefined} className="hover:bg-muted/50 transition-colors duration-150 h-[60px]">
-                  <TableCell className="text-center px-2">
+                   <TableCell className="text-center px-2 sticky left-0 bg-card z-10 group-data-[state=selected]:bg-muted"> {/* Sticky Favorite Cell */}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -260,7 +309,7 @@ export function CryptoTable() {
                       <Star className={cn("h-5 w-5 transition-transform duration-200", isFavorite && 'fill-current scale-110')} />
                     </Button>
                   </TableCell>
-                   <TableCell className="sticky left-0 bg-card z-10 pl-4 pr-2">
+                   <TableCell className="sticky left-[50px] bg-card z-10 pl-4 pr-2 group-data-[state=selected]:bg-muted"> {/* Sticky Name Cell */}
                      <div className="flex items-center gap-3">
                         <Image
                             src={crypto.image}
@@ -278,14 +327,20 @@ export function CryptoTable() {
                    </TableCell>
                   <TableCell className="text-right font-mono px-2">{formatCurrency(crypto.currentPrice)}</TableCell>
                    <TableCell className={cn("text-right font-mono px-2", changeColor)}>
-                     {isPositiveChange ? <ArrowUp className="inline h-3 w-3 mr-1" /> : <ArrowDown className="inline h-3 w-3 mr-1" />}
-                     {formatPercentage(priceChange)}
+                     {priceChange !== null && priceChange !== undefined ? (
+                         <>
+                            {isPositiveChange ? <ArrowUp className="inline h-3 w-3 mr-1" /> : <ArrowDown className="inline h-3 w-3 mr-1" />}
+                             {formatPercentage(priceChange)}
+                         </>
+                     ) : (
+                         'N/A'
+                     )}
                    </TableCell>
                   <TableCell className="text-right font-mono px-2">{formatLargeNumber(crypto.marketCap)}</TableCell>
                   <TableCell className="text-right font-mono px-2">{formatLargeNumber(crypto.volume24h)}</TableCell>
                   <TableCell className="text-right font-mono px-2">
-                    {crypto.circulatingSupply.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                    <span className="ml-1 text-muted-foreground text-xs">{crypto.symbol.toUpperCase()}</span>
+                    {crypto.circulatingSupply ? crypto.circulatingSupply.toLocaleString(undefined, { maximumFractionDigits: 0 }) : 'N/A'}
+                    {crypto.circulatingSupply ? <span className="ml-1 text-muted-foreground text-xs">{crypto.symbol.toUpperCase()}</span> : ''}
                   </TableCell>
                    <TableCell className="text-center px-2">
                      <SparklineChart data={crypto.sparkline} className="w-full h-10" />
@@ -293,11 +348,15 @@ export function CryptoTable() {
                 </TableRow>
               )})
             ) : (
-              <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                  {isLoading ? 'Loading...' : 'No results found.'}
-                </TableCell>
-              </TableRow>
+              // Show 'No results' only if not loading and there was no error, or if error occurred but we have no data
+              !isLoading && (
+                <TableRow>
+                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
+                    {/* Don't show "No results" if there's an error message already */}
+                    {error && cryptos.length === 0 ? '' : 'No results found.'}
+                    </TableCell>
+                </TableRow>
+               )
             )}
           </TableBody>
         </Table>

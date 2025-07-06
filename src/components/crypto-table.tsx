@@ -24,6 +24,7 @@ import { FAVORITES_LOCAL_STORAGE_KEY, REFRESH_INTERVAL_MS } from '@/lib/constant
 import useLocalStorage from '@/hooks/use-local-storage';
 import { cn } from '@/lib/utils';
 import { SparklineChart } from '@/components/sparkline-chart';
+import { CryptoTableRow } from './CryptoTableRow';
 
 type SortConfig = {
   key: keyof MappedCryptoCurrency | null;
@@ -234,100 +235,22 @@ export function CryptoTable() {
                <TableHead className="w-[120px] text-center px-2 py-3">7d Trend</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
-            {isLoading && cryptos.length === 0 ? (
-              Array.from({ length: 15 }).map((_, index) => (
-                <TableRow key={`skeleton-${index}`} className="h-[60px]">
-                  <TableCell className="px-2 sticky left-0 bg-card z-10">
-                        <Skeleton className="h-5 w-5 rounded-full mx-auto" />
-                   </TableCell>
-                  <TableCell className="sticky left-[50px] bg-card z-10 pl-4 pr-2">
-                     <div className="flex items-center gap-3">
-                        <Skeleton className="h-6 w-6 rounded-full" />
-                         <div className="flex-1 space-y-1.5">
-                             <Skeleton className="h-4 w-3/4" />
-                             <Skeleton className="h-3 w-1/2" />
-                         </div>
-                     </div>
-                   </TableCell>
-                  <TableCell className="text-right px-2"><Skeleton className="h-4 w-1/2 ml-auto" /></TableCell>
-                  <TableCell className="text-right px-2"><Skeleton className="h-4 w-1/3 ml-auto" /></TableCell>
-                  <TableCell className="text-right px-2"><Skeleton className="h-4 w-3/4 ml-auto" /></TableCell>
-                  <TableCell className="text-right px-2"><Skeleton className="h-4 w-3/4 ml-auto" /></TableCell>
-                  <TableCell className="text-right px-2"><Skeleton className="h-4 w-3/4 ml-auto" /></TableCell>
-                   <TableCell className="text-center px-2"><Skeleton className="h-8 w-full" /></TableCell>
-                </TableRow>
-              ))
-            ) : filteredCryptos.length > 0 ? (
-              filteredCryptos.map((crypto) => {
-                 const isFavorite = favorites.includes(crypto.id);
-                 const priceChange = crypto.priceChange24h;
-                 const isPositiveChange = (priceChange ?? 0) >= 0;
-                 const changeColor = isPositiveChange ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-
-                 return (
-                <TableRow key={crypto.id} data-state={isFavorite ? 'selected' : undefined} className="hover:bg-muted/50 transition-colors duration-150 h-[60px]">
-                   <TableCell className="text-center px-2 sticky left-0 bg-card z-10 group-data-[state=selected]:bg-muted">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => toggleFavorite(crypto.id)}
-                      className={cn("h-8 w-8 rounded-full", isFavorite ? 'text-yellow-400 hover:text-yellow-500' : 'text-muted-foreground hover:text-foreground')}
-                      aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Star className={cn("h-5 w-5 transition-transform duration-200", isFavorite && 'fill-current scale-110')} />
-                    </Button>
-                  </TableCell>
-                   <TableCell className="sticky left-[50px] bg-card z-10 pl-4 pr-2 group-data-[state=selected]:bg-muted">
-                     <div className="flex items-center gap-3">
-                        <Image
-                            src={crypto.image}
-                            alt={`${crypto.name} logo`}
-                            width={24}
-                            height={24}
-                            className="rounded-full"
-                            unoptimized
-                        />
-                        <div>
-                            <div className="font-medium">{crypto.name}</div>
-                            <div className="text-xs text-muted-foreground uppercase">{crypto.symbol}</div>
-                         </div>
-                     </div>
-                   </TableCell>
-                  <TableCell className="text-right font-mono px-2">{formatCurrency(crypto.currentPrice)}</TableCell>
-                   <TableCell className={cn("text-right font-mono px-2", changeColor)}>
-                     {priceChange !== null && priceChange !== undefined ? (
-                         <>
-                            {isPositiveChange ? <ArrowUp className="inline h-3 w-3 mr-1" /> : <ArrowDown className="inline h-3 w-3 mr-1" />}
-                             {formatPercentage(priceChange)}
-                         </>
-                     ) : (
-                         'N/A'
-                     )}
-                   </TableCell>
-                  <TableCell className="text-right font-mono px-2">{formatLargeNumber(crypto.marketCap)}</TableCell>
-                  <TableCell className="text-right font-mono px-2">{formatLargeNumber(crypto.volume24h)}</TableCell>
-                  <TableCell className="text-right font-mono px-2">
-                    {crypto.circulatingSupply ? crypto.circulatingSupply.toLocaleString(undefined, { maximumFractionDigits: 0 }) : 'N/A'}
-                    {crypto.circulatingSupply ? <span className="ml-1 text-muted-foreground text-xs">{crypto.symbol.toUpperCase()}</span> : ''}
-                  </TableCell>
-                   <TableCell className="text-center px-2">
-                     <SparklineChart data={crypto.sparkline} className="w-full h-10" />
-                   </TableCell>
-                </TableRow>
-              )})
-            ) : (
-              !isLoading && (
-                <TableRow>
-                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                    {error && cryptos.length === 0 ? '' : 'No results found.'}
-                    </TableCell>
-                </TableRow>
-               )
-            )}
-          </TableBody>
+         <TableBody>
+  {filteredCryptos.map((crypto) => (
+    <CryptoTableRow
+      key={crypto.id}
+      crypto={crypto}
+      isFavorite={favorites.includes(crypto.id)}
+      toggleFavorite={toggleFavorite}
+      formatCurrency={formatCurrency}
+      formatLargeNumber={formatLargeNumber}
+      formatPercentage={formatPercentage}
+    />
+  ))}
+</TableBody>
         </Table>
       </div>
+       
     </div>
   );
 }

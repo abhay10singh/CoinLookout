@@ -8,73 +8,171 @@ body {
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* Light Cool Gray */
-    --foreground: 215 25% 27%; /* Dark Slate Gray */
-    --card: 210 40% 98%; /* Light Cool Gray */
-    --card-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --popover: 210 40% 98%; /* Light Cool Gray */
-    --popover-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --primary: 215 25% 27%; /* Dark Slate Gray */
-    --primary-foreground: 210 40% 98%; /* Light Cool Gray */
-    --secondary: 210 40% 96.1%; /* Lighter Cool Gray */
-    --secondary-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --muted: 210 40% 96.1%; /* Lighter Cool Gray */
-    --muted-foreground: 215 16% 47%; /* Medium Slate Gray */
-    --accent: 187 98% 74%; /* Electric Blue (#7DF9FF) */
-    --accent-foreground: 215 25% 27%; /* Dark Slate Gray */
+    --background: 210 40% 98%;
+    /* Light Cool Gray */
+    --foreground: 215 25% 27%;
+    /* Dark Slate Gray */
+    --card: 210 40% 98%;
+    /* Light Cool Gray */
+    --card-foreground: 215 25% 27%;
+    /* Dark Slate Gray */
+    --popover: 210 40% 98%;
+    /* Light Cool Gray */
+    --popover-foreground: 215 25% 27%;
+    /* Dark Slate Gray */
+    --primary: 215 25% 27%;
+    /* Dark Slate Gray */
+    --primary-foreground: 210 40% 98%;
+    /* Light Cool Gray */
+    --secondary: 210 40% 96.1%;
+    /* Lighter Cool Gray */
+    --secondary-foreground: 215 25% 27%;
+    /* Dark Slate Gray */
+    --muted: 210 40% 96.1%;
+    /* Lighter Cool Gray */
+    --muted-foreground: 215 16% 47%;
+    /* Medium Slate Gray */
+    --accent: 187 98% 74%;
+    /* Electric Blue (#7DF9FF) */
+    --accent-foreground: 215 25% 27%;
+    /* Dark Slate Gray */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 210 40% 91%; /* Light Gray Border */
-    --input: 210 40% 91%; /* Light Gray Border */
-    --ring: 187 98% 74%; /* Electric Blue */
-    --chart-1: 187 98% 74%; /* Electric Blue */
-    --chart-2: 210 40% 50%; /* Medium Cool Gray */
-    --chart-3: 215 25% 27%; /* Dark Slate Gray */
-    --chart-4: 215 16% 47%; /* Medium Slate Gray */
-    --chart-5: 210 40% 80%; /* Very Light Cool Gray */
+    --border: 210 40% 91%;
+    /* Light Gray Border */
+    --input: 210 40% 91%;
+    /* Light Gray Border */
+    --ring: 187 98% 74%;
+    /* Electric Blue */
+    --chart-1: 187 98% 74%;
+    /* Electric Blue */
+    --chart-2: 210 40% 50%;
+    /* Medium Cool Gray */
+    --chart-3: 215 25% 27%;
+    /* Dark Slate Gray */
+    --chart-4: 215 16% 47%;
+    /* Medium Slate Gray */
+    --chart-5: 210 40% 80%;
+    /* Very Light Cool Gray */
     --radius: 0.5rem;
-    --sidebar-background: 210 40% 96.1%; /* Lighter Cool Gray */
-    --sidebar-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --sidebar-primary: 187 98% 74%; /* Electric Blue */
-    --sidebar-primary-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --sidebar-accent: 210 40% 91%; /* Light Gray Border */
-    --sidebar-accent-foreground: 215 25% 27%; /* Dark Slate Gray */
-    --sidebar-border: 210 40% 85%; /* Slightly Darker Gray Border */
-    --sidebar-ring: 187 98% 74%; /* Electric Blue */
+    --sidebar-background: 210 40% 98%
+    /* Lighter Cool Gray */
+    --sidebar-foreground: 215 25% 27%;
+    /* Dark Slate Gray */
+    --sidebar-primary: 240 5.9% 10%;
+    /* Electric Blue */
+    --sidebar-primary-foreground: 0 0% 98%;
+    /* Dark Slate Gray */
+    --sidebar-accent: 240 4.8% 95.9%;
+    /* Light Gray Border */
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    /* Dark Slate Gray */
+    --sidebar-border: 220 13% 91%;
+    /* Slightly Darker Gray Border */
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Electric Blue */
+    --shadow-color: 220 10% 20%;
+    --sidebar-w: 260px;
+    --shadow-1: 0 1px 2px hsl(var(--shadow-color) / 0.12);
+    --shadow-2: 0 4px 12px hsl(var(--shadow-color) / 0.14);
+    --shadow-3: 0 12px 30px hsl(var(--shadow-color) / 0.16);
+
+       --neumo-offset: 6px;
+    --neumo-blur: 12px;
+    --neumo-dark: hsl(var(--shadow-color) / 0.22);
+    --neumo-light: hsl(0 0% 100% / 0.75);
+
+        --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+  --chart-5: 265 30% 90%;
+
+    --sidebar-primary: 265 85% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 265 85% 94%;
+    --sidebar-accent-foreground: 265 85% 20%;
+    --sidebar-ring: 265 85% 62%;
   }
+
   .dark {
-    --background: 222 47% 11%; /* Very Dark Blue */
-    --foreground: 210 40% 98%; /* Light Cool Gray */
-    --card: 222 47% 11%; /* Very Dark Blue */
-    --card-foreground: 210 40% 98%; /* Light Cool Gray */
-    --popover: 222 47% 11%; /* Very Dark Blue */
-    --popover-foreground: 210 40% 98%; /* Light Cool Gray */
-    --primary: 210 40% 98%; /* Light Cool Gray */
-    --primary-foreground: 222 47% 11%; /* Very Dark Blue */
-    --secondary: 217 33% 17%; /* Dark Blue */
-    --secondary-foreground: 210 40% 98%; /* Light Cool Gray */
-    --muted: 217 33% 17%; /* Dark Blue */
-    --muted-foreground: 215 20% 65%; /* Light Slate Gray */
-    --accent: 187 98% 74%; /* Electric Blue */
-    --accent-foreground: 222 47% 11%; /* Very Dark Blue */
+    --background: 222 47% 11%;
+    /* Very Dark Blue */
+    --foreground: 210 40% 98%;
+    /* Light Cool Gray */
+    --card: 222 47% 11%;
+    /* Very Dark Blue */
+    --card-foreground: 210 40% 98%;
+    /* Light Cool Gray */
+    --popover: 222 47% 11%;
+    /* Very Dark Blue */
+    --popover-foreground: 210 40% 98%;
+    /* Light Cool Gray */
+    --primary: 210 40% 98%;
+    /* Light Cool Gray */
+    --primary-foreground: 222 47% 11%;
+    /* Very Dark Blue */
+    --secondary: 217 33% 17%;
+    /* Dark Blue */
+    --secondary-foreground: 210 40% 98%;
+    /* Light Cool Gray */
+    --muted: 217 33% 17%;
+    /* Dark Blue */
+    --muted-foreground: 215 20% 65%;
+    /* Light Slate Gray */
+    --accent: 187 98% 74%;
+    /* Electric Blue */
+    --accent-foreground: 222 47% 11%;
+    /* Very Dark Blue */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 217 33% 22%; /* Darker Blue Border */
-    --input: 217 33% 22%; /* Darker Blue Border */
-    --ring: 187 98% 74%; /* Electric Blue */
-    --chart-1: 187 98% 74%; /* Electric Blue */
-    --chart-2: 210 40% 80%; /* Very Light Cool Gray */
-    --chart-3: 210 40% 98%; /* Light Cool Gray */
-    --chart-4: 215 20% 65%; /* Light Slate Gray */
-    --chart-5: 217 33% 17%; /* Dark Blue */
-    --sidebar-background: 217 33% 17%; /* Dark Blue */
-    --sidebar-foreground: 210 40% 98%; /* Light Cool Gray */
-    --sidebar-primary: 187 98% 74%; /* Electric Blue */
-    --sidebar-primary-foreground: 222 47% 11%; /* Very Dark Blue */
-    --sidebar-accent: 217 33% 22%; /* Darker Blue Border */
-    --sidebar-accent-foreground: 210 40% 98%; /* Light Cool Gray */
-    --sidebar-border: 217 33% 27%; /* Slightly Lighter Dark Blue Border */
-    --sidebar-ring: 187 98% 74%; /* Electric Blue */
+    --border: 217 33% 22%;
+    /* Darker Blue Border */
+    --input: 217 33% 22%;
+    /* Darker Blue Border */
+    --ring: 187 98% 74%;
+    /* Electric Blue */
+    --chart-1: 187 98% 74%;
+    /* Electric Blue */
+    --chart-2: 210 40% 80%;
+    /* Very Light Cool Gray */
+    --chart-3: 210 40% 98%;
+    /* Light Cool Gray */
+    --chart-4: 215 20% 65%;
+    /* Light Slate Gray */
+    --chart-5: 217 33% 17%;
+    /* Dark Blue */
+    --sidebar-background: 222 47% 11%;
+    /* Dark Blue */
+    --sidebar-foreground: 222 47% 11%;
+    /* Light Cool Gray */
+    --sidebar-primary: 222 47% 11%;
+    /* Electric Blue */
+    --sidebar-primary-foreground: 222 47% 11%;
+    /* Very Dark Blue */
+    --sidebar-accent: 222 47% 11%;
+    /* Darker Blue Border */
+    --sidebar-accent-foreground: 222 47% 11%;
+    /* Light Cool Gray */
+    --sidebar-border: 222 47% 11%;
+    /* Slightly Lighter Dark Blue Border */
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Electric Blue */
+    --shadow-color: 220 10% 5%;
+    --shadow-1: 0 1px 2px hsl(var(--shadow-color) / 0.35);
+    --shadow-2: 0 6px 18px hsl(var(--shadow-color) / 0.30);
+    --shadow-3: 0 18px 40px hsl(var(--shadow-color) / 0.28);
+
+        --neumo-offset: 6px;
+    --neumo-blur: 14px;
+    --neumo-dark: hsl(var(--shadow-color) / 0.40);
+    --neumo-light: hsl(0 0% 100% / 0.06);
+
+        --sidebar: oklch(59.301% 0.23948 28.868);
+    --sidebar-foreground: oklch(61.482% 0.25231 29.223);
+    --sidebar-primary: 265 85% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 35% 18%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-ring: 265 85% 62%;
   }
 }
 
@@ -82,6 +180,7 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     /* Add subtle background texture */
@@ -92,31 +191,34 @@ body {
 
 /* Glassmorphism style */
 .glass {
-  background: rgba(255, 255, 255, 0.1); /* Adjust alpha for transparency */
+  background: rgba(255, 255, 255, 0.1);
+  /* Adjust alpha for transparency */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-3);
 }
 
 .dark .glass {
-  background: rgba(30, 30, 40, 0.2); /* Adjust alpha for dark mode */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 30, 40, 0.2);
+  /* Adjust alpha for dark mode */
+ box-shadow: var(--shadow-3);
 }
 
-/* Neumorphism style - Light */
+
 .neumorphism-light {
   border-radius: 10px;
   background: hsl(var(--background));
-  box-shadow: 6px 6px 12px hsla(var(--secondary) / 0.6),
-              -6px -6px 12px hsla(0 0% 100% / 0.8);
+  box-shadow:
+    var(--neumo-offset) var(--neumo-offset) var(--neumo-blur) var(--neumo-dark),
+    calc(var(--neumo-offset) * -1) calc(var(--neumo-offset) * -1) var(--neumo-blur) var(--neumo-light);
 }
 
-/* Neumorphism style - Dark */
 .neumorphism-dark {
   border-radius: 10px;
   background: hsl(var(--background));
-  box-shadow: 6px 6px 12px hsla(var(--secondary) / 0.6),
-              -6px -6px 12px hsla(0 0% 100% / 0.05); /* Adjust shadow for dark */
+ box-shadow:
+    var(--neumo-offset) var(--neumo-offset) var(--neumo-blur) var(--neumo-dark),
+    calc(var(--neumo-offset) * -1) calc(var(--neumo-offset) * -1) var(--neumo-blur) var(--neumo-light);
 }

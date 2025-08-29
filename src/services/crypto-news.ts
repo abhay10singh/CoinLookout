@@ -1,32 +1,14 @@
-/**
- * Represents a news article related to cryptocurrency.
- */
+
 export interface CryptoNewsArticle {
-  /**
-   * The title of the news article.
-   */
-  title: string;
-  /**
-   * The URL of the news article.
-   */
-  url: string;
-  /**
-   * The source of the news article.
-   */
-  source: string;
-  /**
-   * The date of publication in ISO format
-   */
-  date: string;
+  title: string;  // headline text
+  url: string;    // link to the full article
+  source: string; // where the article came from
+  date: string;   // ISO date string (e.g. 2024-01-01T12:00:00.000Z)
 }
 
-/**
- * Asynchronously retrieves cryptocurrency news articles.
- * @returns A promise that resolves to an array of CryptoNewsArticle objects.
- */
+
 export async function getCryptoNews(): Promise<CryptoNewsArticle[]> {
-  // TODO: Implement this by calling an API.
-  return [
+  const news: CryptoNewsArticle[] = [
     {
       title: 'Bitcoin price surges to new high',
       url: 'https://example.com/bitcoin-surge',
@@ -40,4 +22,6 @@ export async function getCryptoNews(): Promise<CryptoNewsArticle[]> {
       date: '2024-01-02T12:00:00.000Z',
     },
   ];
+
+  return news;
 }

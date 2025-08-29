@@ -14,7 +14,7 @@ interface SparklineChartProps {
 
 export function SparklineChart({
   data = [],
-  strokeColor = 'hsl(var(--foreground))', // Default to foreground color
+  strokeColor = 'hsl(var(--foreground))', 
   height = 40,
   width = '100%',
   className,
@@ -25,7 +25,7 @@ export function SparklineChart({
 
   const chartData = data.map((value, index) => ({ name: index, value }));
   const isPositive = data[data.length - 1] >= data[0];
-  const defaultColor = isPositive ? 'hsl(var(--chart-1))' : 'hsl(var(--destructive))'; // Use theme colors
+  const defaultColor = isPositive ? 'hsl(var(--chart-1))' : 'hsl(var(--destructive))';
 
   return (
     <div style={{ height: `${height}px`, width }} className={cn(className)}>

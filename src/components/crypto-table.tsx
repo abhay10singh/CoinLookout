@@ -18,6 +18,7 @@ import {
   Search,
   Star,
 } from 'lucide-react';
+import { useStateToggleStore } from '@/store/store';
 import type { MappedCryptoCurrency } from '@/services/coin-gecko';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FAVORITES_LOCAL_STORAGE_KEY, REFRESH_INTERVAL_MS } from '@/lib/constants';
@@ -32,6 +33,7 @@ type SortConfig = {
 };
 
 export function CryptoTable() {
+   const isSidebarOpen = useStateToggleStore(s => s.toggle)
   const [cryptos, setCryptos] = React.useState<MappedCryptoCurrency[]>([]);
   const [filteredCryptos, setFilteredCryptos] = React.useState<MappedCryptoCurrency[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -174,7 +176,14 @@ export function CryptoTable() {
    };
 
   return (
-    <div className="w-full">
+    <div
+      className="transition-[margin,width] duration-200 ease-out px-2 md:px-4"
+      style={
+        isSidebarOpen
+          ? { marginLeft: 'var(--sidebar-w)', width: 'calc(100% - var(--sidebar-w))' }
+          : { marginLeft: 0, width: '100%' }
+      }
+    >
       <div className="flex items-center py-4 gap-4 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

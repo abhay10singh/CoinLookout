@@ -1,5 +1,5 @@
 'use client';
-
+import { ThemeProvider } from "@/components/ui/theme-provider"
 import * as React from 'react';
 import { Moon, Sun } from 'lucide-react';
 
